@@ -10,12 +10,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import by.arvisit.modsenlibapp.libraryservice.dto.BorrowedBookResponseDto;
-import by.arvisit.modsenlibapp.libraryservice.dto.ReturnBookRequestDto;
 import by.arvisit.modsenlibapp.libraryservice.dto.ReturnedBookResponseDto;
 import jakarta.annotation.security.RolesAllowed;
 
@@ -54,8 +52,7 @@ public class LibraryController {
 
     @PatchMapping("/borrowed/{id}/return")
     @RolesAllowed("ADMIN")
-    public ReturnedBookResponseDto returnBook(@PathVariable @UUID String id,
-            @RequestBody ReturnBookRequestDto request) {
+    public ReturnedBookResponseDto returnBook(@PathVariable @UUID String id) {
         // TODO implement!
         return null;
     }
