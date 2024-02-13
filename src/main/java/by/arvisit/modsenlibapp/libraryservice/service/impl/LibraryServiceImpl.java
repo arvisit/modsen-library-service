@@ -86,7 +86,7 @@ public class LibraryServiceImpl implements LibraryService {
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Book with id {0} is not borrowed", id)));
         LocalDate returnedDate = LocalDate.now();
         LocalDate borrowedDate = borrowedBook.getBorrowedDate();
-        if (!returnedDate.isAfter(borrowedDate)) {
+        if (!returnedDate.isAfter(borrowedDate) && !returnedDate.isEqual(borrowedDate)) {
             throw new IllegalArgumentException("Returned date could not be before borrowed date");
         }
         borrowedBook.setReturnedDate(returnedDate);
