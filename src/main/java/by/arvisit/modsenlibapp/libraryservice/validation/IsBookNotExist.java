@@ -8,17 +8,17 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import by.arvisit.modsenlibapp.libraryservice.validation.provider.IsBookAlreadyExistValidator;
+import by.arvisit.modsenlibapp.libraryservice.validation.provider.IsBookNotExistValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 @Target({ FIELD, PARAMETER })
 @Retention(RUNTIME)
 @Documented
-@Constraint(validatedBy = IsBookAlreadyExistValidator.class)
-public @interface IsBookAlreadyExist {
+@Constraint(validatedBy = IsBookNotExistValidator.class)
+public @interface IsBookNotExist {
 
-    String message() default "{by.arvisit.modsenlibapp.libraryservice.validation.IsBookAlreadyExist.message}";
+    String message() default "{by.arvisit.modsenlibapp.libraryservice.validation.IsBookNotExist.message}";
 
     Class<?>[] groups() default {};
 
