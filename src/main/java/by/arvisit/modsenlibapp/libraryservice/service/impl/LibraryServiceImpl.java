@@ -36,11 +36,9 @@ public class LibraryServiceImpl implements LibraryService {
 
     @Transactional
     @Override
-    public LibraryBookDto addNewBook(String id) {
-        log.debug("Call for LibraryService.addNewBook() with id {}", id);
-        Book savedBook = bookRepository.save(Book.builder()
-                .withId(UUID.fromString(id))
-                .build());
+    public LibraryBookDto addNewBook(LibraryBookDto dto) {
+        log.debug("Call for LibraryService.addNewBook() {}", dto);
+        Book savedBook = bookRepository.save(bookMapper.fromDtoToEntity(dto));
         return bookMapper.fromEntityToDto(savedBook);
     }
 

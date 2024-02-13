@@ -2,6 +2,7 @@ package by.arvisit.modsenlibapp.libraryservice.mapper;
 
 import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
 import by.arvisit.modsenlibapp.libraryservice.dto.LibraryBookDto;
@@ -12,5 +13,8 @@ import by.arvisit.modsenlibapp.libraryservice.persistence.model.Book;
 public interface BookMapper {
 
     LibraryBookDto fromEntityToDto(Book entity);
+
+    @Mapping(target = "records", ignore = true)
+    Book fromDtoToEntity(LibraryBookDto dto);
 
 }

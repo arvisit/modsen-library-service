@@ -8,7 +8,7 @@ import by.arvisit.modsenlibapp.libraryservice.dto.ReturnedBookResponseDto;
 
 public interface LibraryService {
 
-    LibraryBookDto addNewBook(String id);
+    LibraryBookDto addNewBook(LibraryBookDto dto);
 
     List<LibraryBookDto> getAvailableBooks();
 

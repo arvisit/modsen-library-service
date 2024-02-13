@@ -36,7 +36,7 @@ public class LibraryController {
     @PostMapping
     @RolesAllowed("ADMIN")
     public ResponseEntity<LibraryBookDto> addNewBook(@RequestBody @Valid LibraryBookDto newBook) {
-        LibraryBookDto response = libraryService.addNewBook(newBook.id());
+        LibraryBookDto response = libraryService.addNewBook(newBook);
         log.debug("New book with id {} was added", response);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
