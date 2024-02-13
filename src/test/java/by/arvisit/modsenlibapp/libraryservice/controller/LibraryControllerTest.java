@@ -1,11 +1,13 @@
 package by.arvisit.modsenlibapp.libraryservice.controller;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.Assertions;
@@ -25,6 +27,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import by.arvisit.modsenlibapp.exceptionhandlingstarter.handler.GlobalExceptionHandlerAdvice;
@@ -146,6 +149,58 @@ class LibraryControllerTest {
                     .andExpect(content().string(containsString(expectedContent)));
         }
 
+    }
+    
+    @Nested
+    class GetAvailableBooks {
+        
+        @Test
+        void shouldReturn200_when_invokeGetAvailableBooks() throws Exception {
+            mockMvc.perform(get(LibraryTestData.URL_AVAILABLE_BOOKS_ENDPOINT)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isOk());
+        }
+
+        @Test
+        void shouldMapsToBusinessModel_when_invokeGetAvailableBooks() throws Exception {
+            List<LibraryBookDto> responseDtos = List.of(LibraryTestData.getNewBook().build());
+
+            Mockito.when(libraryService.getAvailableBooks()).thenReturn(responseDtos);
+
+            MvcResult mvcResult = mockMvc.perform(get(LibraryTestData.URL_AVAILABLE_BOOKS_ENDPOINT)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            Mockito.verify(libraryService, Mockito.times(1)).getAvailableBooks();
+            String actualResponseBody = mvcResult.getResponse().getContentAsString();
+            List<LibraryBookDto> result = objectMapper.readValue(actualResponseBody,
+                    new TypeReference<List<LibraryBookDto>>() {
+                    });
+
+            Assertions.assertThat(result).isEqualTo(responseDtos);
+        }
+
+        @Test
+        void shouldReturnValidBooks_when_invokeGetAvailableBooks() throws Exception {
+            List<LibraryBookDto> responseDtos = List.of(LibraryTestData.getNewBook().build());
+
+            Mockito.when(libraryService.getAvailableBooks()).thenReturn(responseDtos);
+
+            MvcResult mvcResult = mockMvc.perform(get(LibraryTestData.URL_AVAILABLE_BOOKS_ENDPOINT)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String actualResponseBody = mvcResult.getResponse().getContentAsString();
+
+            Assertions.assertThat(actualResponseBody)
+                    .isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(responseDtos));
+        }
+        
     }
 
     static Stream<String> invalidUUID() {
