@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import by.arvisit.modsenlibapp.libraryservice.dto.BorrowedBookResponseDto;
 import by.arvisit.modsenlibapp.libraryservice.dto.LibraryBookDto;
+import by.arvisit.modsenlibapp.libraryservice.dto.ReturnedBookResponseDto;
 
 public final class LibraryTestData {
 
@@ -14,6 +15,7 @@ public final class LibraryTestData {
     public static final String URL_AVAILABLE_BOOKS_ENDPOINT = "/api/v1/books/available";
     public static final String URL_BORROWED_BOOKS_ENDPOINT = "/api/v1/books/borrowed";
     public static final String URL_BORROW_BOOK_ENDPOINT = "/api/v1/books/available/{id}/borrow";
+    public static final String URL_RETURN_BOOK_ENDPOINT = "/api/v1/books/borrowed/{id}/return";
 
     private LibraryTestData() {
     }
@@ -29,5 +31,15 @@ public final class LibraryTestData {
                 .withBorrowerUsername(USERNAME)
                 .withBorrowedDate(LocalDate.parse("2020-01-01"))
                 .withReturnDueDate(LocalDate.parse("2020-02-01"));
+    }
+    
+
+    public static ReturnedBookResponseDto.ReturnedBookResponseDtoBuilder getReturnedBookRecord() {
+        return ReturnedBookResponseDto.builder()
+                .withBookId(NEW_BOOK_ID)
+                .withBorrowerUsername(USERNAME)
+                .withBorrowedDate(LocalDate.parse("2021-01-01"))
+                .withReturnDueDate(LocalDate.parse("2021-02-01"))
+                .withReturnedDate(LocalDate.parse("2021-01-15"));
     }
 }

@@ -2,6 +2,7 @@ package by.arvisit.modsenlibapp.libraryservice.controller;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -35,6 +36,7 @@ import by.arvisit.modsenlibapp.exceptionhandlingstarter.handler.GlobalExceptionH
 import by.arvisit.modsenlibapp.innerfilterstarter.filter.JwtInnerFilter;
 import by.arvisit.modsenlibapp.libraryservice.dto.BorrowedBookResponseDto;
 import by.arvisit.modsenlibapp.libraryservice.dto.LibraryBookDto;
+import by.arvisit.modsenlibapp.libraryservice.dto.ReturnedBookResponseDto;
 import by.arvisit.modsenlibapp.libraryservice.service.BookService;
 import by.arvisit.modsenlibapp.libraryservice.service.LibraryService;
 import by.arvisit.modsenlibapp.libraryservice.util.LibraryTestData;
@@ -49,6 +51,7 @@ class LibraryControllerTest {
     private static final String BOOK_ALREADY_EXISTS_MESSAGE = "Book with such id already exists.";
     private static final String BOOK_NOT_EXISTS_MESSAGE = "Book with such id does not exist.";
     private static final String BOOK_NOT_AVAILABLE_MESSAGE_TEMPLATE = "Book with id {0} is not available";
+    private static final String BOOK_NOT_BORROWED_MESSAGE_TEMPLATE = "Book with id {0} is not borrowed";
 
     @Autowired
     private MockMvc mockMvc;
@@ -353,6 +356,106 @@ class LibraryControllerTest {
             String expectedContent = notFoundMessage;
 
             mockMvc.perform(post(LibraryTestData.URL_BORROW_BOOK_ENDPOINT, bookId)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isNotFound())
+                    .andExpect(content().string(containsString(expectedContent)));
+        }
+    }
+
+    @Nested
+    class ReturnBook {
+
+        @Test
+        void shouldReturn200_when_passValidInput() throws Exception {
+            Mockito.when(bookService.isBookExist(Mockito.any())).thenReturn(true);
+
+            mockMvc.perform(patch(LibraryTestData.URL_RETURN_BOOK_ENDPOINT, LibraryTestData.NEW_BOOK_ID)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isOk());
+        }
+
+        @Test
+        void shouldMapsToBusinessModel_when_passValidInput() throws Exception {
+            ReturnedBookResponseDto responseDto = LibraryTestData.getReturnedBookRecord().build();
+
+            String bookId = LibraryTestData.NEW_BOOK_ID;
+            Mockito.when(bookService.isBookExist(Mockito.any())).thenReturn(true);
+            Mockito.when(libraryService.returnBook(bookId)).thenReturn(responseDto);
+
+            MvcResult mvcResult = mockMvc.perform(patch(LibraryTestData.URL_RETURN_BOOK_ENDPOINT, bookId)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            Mockito.verify(libraryService, Mockito.times(1)).returnBook(bookId);
+            String actualResponseBody = mvcResult.getResponse().getContentAsString();
+            ReturnedBookResponseDto result = objectMapper.readValue(actualResponseBody, ReturnedBookResponseDto.class);
+
+            Assertions.assertThat(result).isEqualTo(responseDto);
+        }
+
+        @Test
+        void shouldReturnValidBook_when_passValidInput() throws Exception {
+            ReturnedBookResponseDto responseDto = LibraryTestData.getReturnedBookRecord().build();
+
+            String bookId = LibraryTestData.NEW_BOOK_ID;
+            Mockito.when(bookService.isBookExist(Mockito.any())).thenReturn(true);
+            Mockito.when(libraryService.returnBook(bookId)).thenReturn(responseDto);
+
+            MvcResult mvcResult = mockMvc
+                    .perform(patch(LibraryTestData.URL_RETURN_BOOK_ENDPOINT, LibraryTestData.NEW_BOOK_ID)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String actualResponseBody = mvcResult.getResponse().getContentAsString();
+
+            Assertions.assertThat(actualResponseBody)
+                    .isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(responseDto));
+        }
+
+        @ParameterizedTest
+        @MethodSource("by.arvisit.modsenlibapp.libraryservice.controller.LibraryControllerTest#invalidUUID")
+        void shouldReturn400_when_passInvalidUUID(String id) throws Exception {
+            String expectedContent = INVALID_UUID_MESSAGE;
+            Mockito.when(bookService.isBookExist(Mockito.any())).thenReturn(false);
+
+            mockMvc.perform(patch(LibraryTestData.URL_RETURN_BOOK_ENDPOINT, id)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isBadRequest())
+                    .andExpect(content().string(containsString(expectedContent)));
+        }
+
+        @Test
+        void shouldReturn400_when_passNonExistingId() throws Exception {
+            Mockito.when(bookService.isBookExist(Mockito.any())).thenReturn(false);
+
+            String expectedContent = BOOK_NOT_EXISTS_MESSAGE;
+
+            mockMvc.perform(patch(LibraryTestData.URL_RETURN_BOOK_ENDPOINT, LibraryTestData.NEW_BOOK_ID)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isBadRequest())
+                    .andExpect(content().string(containsString(expectedContent)));
+        }
+
+        @Test
+        void shouldReturn404_when_passNotBorrowedBookId() throws Exception {
+            Mockito.when(bookService.isBookExist(Mockito.any())).thenReturn(true);
+
+            String bookId = LibraryTestData.NEW_BOOK_ID;
+            String notFoundMessage = MessageFormat.format(BOOK_NOT_BORROWED_MESSAGE_TEMPLATE, bookId);
+            Mockito.when(libraryService.returnBook(Mockito.anyString())).thenThrow(
+                    new EntityNotFoundException(notFoundMessage));
+
+            String expectedContent = notFoundMessage;
+
+            mockMvc.perform(patch(LibraryTestData.URL_RETURN_BOOK_ENDPOINT, bookId)
                     .contentType(MediaType.APPLICATION_JSON))
                     .andDo(print())
                     .andExpect(status().isNotFound())
