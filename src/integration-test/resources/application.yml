@@ -1,0 +1,28 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+  liquibase:
+    change-log: classpath:db/changelog/changelog.xml
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+  security:
+    cors:
+      allowedOrigin: ${CORS_ALLOWED_ORIGIN}
+      allowedMethod: ${CORS_ALLOWED_METHOD}
+      allowedHeader: ${CORS_ALLOWED_HEADER}
+  settings:
+    modsen-security-service:
+      uri: http://localhost:8480/api/v1/users
+
+logging:
+  level:
+    root: info
+
+exception:
+  handling:
+    include: true
+security:
+  inner-filter:
+    include: true

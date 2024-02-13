@@ -1,0 +1,10 @@
+spring:
+  jpa:
+    show-sql: true
+  liquibase:
+    contexts: itest
+
+logging:
+  level:
+    liquibase: info
+    '[by.arvisit.modsenlibapp.libraryservice]': debug
