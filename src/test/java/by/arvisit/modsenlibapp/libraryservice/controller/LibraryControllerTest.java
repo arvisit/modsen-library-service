@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -32,10 +33,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import by.arvisit.modsenlibapp.exceptionhandlingstarter.handler.GlobalExceptionHandlerAdvice;
 import by.arvisit.modsenlibapp.innerfilterstarter.filter.JwtInnerFilter;
+import by.arvisit.modsenlibapp.libraryservice.dto.BorrowedBookResponseDto;
 import by.arvisit.modsenlibapp.libraryservice.dto.LibraryBookDto;
 import by.arvisit.modsenlibapp.libraryservice.service.BookService;
 import by.arvisit.modsenlibapp.libraryservice.service.LibraryService;
 import by.arvisit.modsenlibapp.libraryservice.util.LibraryTestData;
+import jakarta.persistence.EntityNotFoundException;
 
 @WebMvcTest(controllers = LibraryController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtInnerFilter.class))
 @AutoConfigureMockMvc(addFilters = false)
@@ -44,6 +47,8 @@ class LibraryControllerTest {
 
     private static final String INVALID_UUID_MESSAGE = "must be a valid UUID";
     private static final String BOOK_ALREADY_EXISTS_MESSAGE = "Book with such id already exists.";
+    private static final String BOOK_NOT_EXISTS_MESSAGE = "Book with such id does not exist.";
+    private static final String BOOK_NOT_AVAILABLE_MESSAGE_TEMPLATE = "Book with id {0} is not available";
 
     @Autowired
     private MockMvc mockMvc;
@@ -255,8 +260,108 @@ class LibraryControllerTest {
 
     }
 
+    @Nested
+    class BorrowBook {
+
+        @Test
+        void shouldReturn201_when_passValidInput() throws Exception {
+            Mockito.when(bookService.isBookExist(Mockito.any())).thenReturn(true);
+
+            mockMvc.perform(post(LibraryTestData.URL_BORROW_BOOK_ENDPOINT, LibraryTestData.NEW_BOOK_ID)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isCreated());
+        }
+
+        @Test
+        void shouldMapsToBusinessModel_when_passValidInput() throws Exception {
+            BorrowedBookResponseDto responseDto = LibraryTestData.getNewBorrowedBookRecord().build();
+
+            String bookId = LibraryTestData.NEW_BOOK_ID;
+            Mockito.when(bookService.isBookExist(Mockito.any())).thenReturn(true);
+            Mockito.when(libraryService.borrowBook(bookId)).thenReturn(responseDto);
+
+            MvcResult mvcResult = mockMvc.perform(post(LibraryTestData.URL_BORROW_BOOK_ENDPOINT, bookId)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isCreated())
+                    .andReturn();
+
+            Mockito.verify(libraryService, Mockito.times(1)).borrowBook(bookId);
+            String actualResponseBody = mvcResult.getResponse().getContentAsString();
+            BorrowedBookResponseDto result = objectMapper.readValue(actualResponseBody, BorrowedBookResponseDto.class);
+
+            Assertions.assertThat(result).isEqualTo(responseDto);
+        }
+
+        @Test
+        void shouldReturnValidBook_when_passValidInput() throws Exception {
+            BorrowedBookResponseDto responseDto = LibraryTestData.getNewBorrowedBookRecord().build();
+
+            String bookId = LibraryTestData.NEW_BOOK_ID;
+            Mockito.when(bookService.isBookExist(Mockito.any())).thenReturn(true);
+            Mockito.when(libraryService.borrowBook(bookId)).thenReturn(responseDto);
+
+            MvcResult mvcResult = mockMvc
+                    .perform(post(LibraryTestData.URL_BORROW_BOOK_ENDPOINT, LibraryTestData.NEW_BOOK_ID)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isCreated())
+                    .andReturn();
+
+            String actualResponseBody = mvcResult.getResponse().getContentAsString();
+
+            Assertions.assertThat(actualResponseBody)
+                    .isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(responseDto));
+        }
+
+        @ParameterizedTest
+        @MethodSource("by.arvisit.modsenlibapp.libraryservice.controller.LibraryControllerTest#invalidUUID")
+        void shouldReturn400_when_passInvalidUUID(String id) throws Exception {
+            String expectedContent = INVALID_UUID_MESSAGE;
+            Mockito.when(bookService.isBookExist(Mockito.any())).thenReturn(false);
+
+            mockMvc.perform(post(LibraryTestData.URL_BORROW_BOOK_ENDPOINT, id)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isBadRequest())
+                    .andExpect(content().string(containsString(expectedContent)));
+        }
+
+        @Test
+        void shouldReturn400_when_passNonExistingId() throws Exception {
+            Mockito.when(bookService.isBookExist(Mockito.any())).thenReturn(false);
+
+            String expectedContent = BOOK_NOT_EXISTS_MESSAGE;
+
+            mockMvc.perform(post(LibraryTestData.URL_BORROW_BOOK_ENDPOINT, LibraryTestData.NEW_BOOK_ID)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isBadRequest())
+                    .andExpect(content().string(containsString(expectedContent)));
+        }
+
+        @Test
+        void shouldReturn404_when_passNotAvailableBookId() throws Exception {
+            Mockito.when(bookService.isBookExist(Mockito.any())).thenReturn(true);
+
+            String bookId = LibraryTestData.NEW_BOOK_ID;
+            String notFoundMessage = MessageFormat.format(BOOK_NOT_AVAILABLE_MESSAGE_TEMPLATE, bookId);
+            Mockito.when(libraryService.borrowBook(Mockito.anyString())).thenThrow(
+                    new EntityNotFoundException(notFoundMessage));
+
+            String expectedContent = notFoundMessage;
+
+            mockMvc.perform(post(LibraryTestData.URL_BORROW_BOOK_ENDPOINT, bookId)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isNotFound())
+                    .andExpect(content().string(containsString(expectedContent)));
+        }
+    }
+
     static Stream<String> invalidUUID() {
         return Stream.of("abc", "66701adf364d-44bd-8d46-46ef01d2af4d", "0123-456-789-jd",
-                "66701adf-364d-44gd-8d46-46ef01d2af4d");
+                "66701adf-364d-44ssssgd-8d46-46ef01d2af4d");
     }
 }
