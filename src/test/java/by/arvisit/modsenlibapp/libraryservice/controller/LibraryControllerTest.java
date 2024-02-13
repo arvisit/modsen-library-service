@@ -150,10 +150,10 @@ class LibraryControllerTest {
         }
 
     }
-    
+
     @Nested
     class GetAvailableBooks {
-        
+
         @Test
         void shouldReturn200_when_invokeGetAvailableBooks() throws Exception {
             mockMvc.perform(get(LibraryTestData.URL_AVAILABLE_BOOKS_ENDPOINT)
@@ -200,7 +200,59 @@ class LibraryControllerTest {
             Assertions.assertThat(actualResponseBody)
                     .isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(responseDtos));
         }
-        
+
+    }
+
+    @Nested
+    class GetBorrowedBooks {
+
+        @Test
+        void shouldReturn200_when_invokeGetBorrowedBooks() throws Exception {
+            mockMvc.perform(get(LibraryTestData.URL_BORROWED_BOOKS_ENDPOINT)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isOk());
+        }
+
+        @Test
+        void shouldMapsToBusinessModel_when_invokeGetBorrowedBooks() throws Exception {
+            List<LibraryBookDto> responseDtos = List.of(LibraryTestData.getNewBook().build());
+
+            Mockito.when(libraryService.getBorrowedBooks()).thenReturn(responseDtos);
+
+            MvcResult mvcResult = mockMvc.perform(get(LibraryTestData.URL_BORROWED_BOOKS_ENDPOINT)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            Mockito.verify(libraryService, Mockito.times(1)).getBorrowedBooks();
+            String actualResponseBody = mvcResult.getResponse().getContentAsString();
+            List<LibraryBookDto> result = objectMapper.readValue(actualResponseBody,
+                    new TypeReference<List<LibraryBookDto>>() {
+                    });
+
+            Assertions.assertThat(result).isEqualTo(responseDtos);
+        }
+
+        @Test
+        void shouldReturnValidBooks_when_invokeGetBorrowedBooks() throws Exception {
+            List<LibraryBookDto> responseDtos = List.of(LibraryTestData.getNewBook().build());
+
+            Mockito.when(libraryService.getBorrowedBooks()).thenReturn(responseDtos);
+
+            MvcResult mvcResult = mockMvc.perform(get(LibraryTestData.URL_BORROWED_BOOKS_ENDPOINT)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String actualResponseBody = mvcResult.getResponse().getContentAsString();
+
+            Assertions.assertThat(actualResponseBody)
+                    .isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(responseDtos));
+        }
+
     }
 
     static Stream<String> invalidUUID() {

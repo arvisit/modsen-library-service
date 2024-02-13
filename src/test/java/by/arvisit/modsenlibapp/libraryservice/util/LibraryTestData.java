@@ -8,6 +8,7 @@ public final class LibraryTestData {
     
     public static final String URL_BOOKS_ENDPOINT = "/api/v1/books";
     public static final String URL_AVAILABLE_BOOKS_ENDPOINT = "/api/v1/books/available";
+    public static final String URL_BORROWED_BOOKS_ENDPOINT = "/api/v1/books/borrowed";
     
     private LibraryTestData() {
     }
