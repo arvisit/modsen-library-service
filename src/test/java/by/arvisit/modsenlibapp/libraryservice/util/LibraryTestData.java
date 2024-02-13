@@ -16,6 +16,7 @@ public final class LibraryTestData {
     public static final String URL_BORROWED_BOOKS_ENDPOINT = "/api/v1/books/borrowed";
     public static final String URL_BORROW_BOOK_ENDPOINT = "/api/v1/books/available/{id}/borrow";
     public static final String URL_RETURN_BOOK_ENDPOINT = "/api/v1/books/borrowed/{id}/return";
+    public static final String URL_BORROWED_BOOK_INFO_ENDPOINT = "/api/v1/books/borrowed/{id}";
 
     private LibraryTestData() {
     }
