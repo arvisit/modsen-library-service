@@ -12,7 +12,7 @@
             </column>
         </createTable>
 
-        <createTable tableName="borrowed_books">
+        <createTable tableName="book_records">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -34,9 +34,9 @@
         </createTable>
 
         <addForeignKeyConstraint
-                baseTableName="borrowed_books"
+                baseTableName="book_records"
                 baseColumnNames="book_id"
-                constraintName="fk_borrowed_books_book_id"
+                constraintName="fk_book_records_book_id"
                 referencedTableName="books"
                 referencedColumnNames="id"
         />
