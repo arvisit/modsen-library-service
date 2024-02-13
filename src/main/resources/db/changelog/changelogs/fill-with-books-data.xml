@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="fill-with-books-data" author="arvisit" >
+
+        <insert tableName="books">
+            <column name="id" value="db7bb26a-b292-44e1-a814-4dc41f0c899a"/>
+        </insert>
+        <insert tableName="books">
+            <column name="id" value="66701adf-364d-44bd-8d46-46ef01d2af4d"/>
+        </insert>
+        <insert tableName="books">
+            <column name="id" value="117cb44f-420b-4f44-bb39-c77fbac706ee"/>
+        </insert>
+        <insert tableName="books">
+            <column name="id" value="05edec82-491a-49ab-8f6f-4b4c70240f8f"/>
+        </insert>
+        <insert tableName="books">
+            <column name="id" value="f87c688b-0173-4c4e-929a-dc9d56ba8b33"/>
+        </insert>
+        <insert tableName="books">
+            <column name="id" value="0c8f84fd-17b8-4286-931d-230e1d4f0f7b"/>
+        </insert>
+        <insert tableName="books">
+            <column name="id" value="b166f764-7851-499a-815c-748083967bdb"/>
+        </insert>
+        <insert tableName="books">
+            <column name="id" value="e53212e6-8753-475d-ac1a-7ab79fdeea8b"/>
+        </insert>
+        <insert tableName="books">
+            <column name="id" value="9e8910ee-500c-441c-9eb8-6d8c3e5c58d7"/>
+        </insert>
+        <insert tableName="books">
+            <column name="id" value="4ffaf299-d6d9-42dc-ba0c-bca56ef68a8e"/>
+        </insert>
+
+    </changeSet>
+</databaseChangeLog>
