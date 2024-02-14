@@ -34,7 +34,7 @@ public interface LibraryOpenApi {
     String NOT_FOUND = "NOT FOUND";
 
     @Operation(
-            summary = "Adding a new book",
+            summary = "Add a new book",
             description = "Util endpoint used by Book Service via Feign Client. Should not be used for direct requests. Admin role is required",
             responses = {
                     @ApiResponse(
@@ -60,7 +60,7 @@ public interface LibraryOpenApi {
                             implementation = LibraryBookDto.class))) @RequestBody @Valid LibraryBookDto newBook);
 
     @Operation(
-            summary = "Obtainment of the available books",
+            summary = "Get the list of available books",
             description = "Obtain list of the available books identificators. Admin or User role is required",
             responses = {
                     @ApiResponse(
@@ -79,7 +79,7 @@ public interface LibraryOpenApi {
     List<LibraryBookDto> getAvailableBooks();
 
     @Operation(
-            summary = "Obtainment of the borrowed books",
+            summary = "Get the list of borrowed books",
             description = "Obtain list of the borrowed books identificators. Admin or User role is required",
             responses = {
                     @ApiResponse(
@@ -98,7 +98,7 @@ public interface LibraryOpenApi {
     List<LibraryBookDto> getBorrowedBooks();
 
     @Operation(
-            summary = "Borrowing a book",
+            summary = "Borrow a book",
             description = "Used to return a book. User role is required",
             responses = {
                     @ApiResponse(
@@ -127,7 +127,7 @@ public interface LibraryOpenApi {
             example = "d4cee2e6-cb52-4a17-ae47-f4ad85dd8b86") @PathVariable @UUID @IsBookExist String id);
 
     @Operation(
-            summary = "Returning a book",
+            summary = "Return a book",
             description = "Used to return a book. Admin role is required",
             responses = {
                     @ApiResponse(
@@ -156,7 +156,7 @@ public interface LibraryOpenApi {
             example = "d4cee2e6-cb52-4a17-ae47-f4ad85dd8b86") @PathVariable @UUID @IsBookExist String id);
 
     @Operation(
-            summary = "Borrowed book info obtainment",
+            summary = "Get information about a borrowed book",
             description = "Used to obtain info about borrowed book. Admin role is required",
             responses = {
                     @ApiResponse(
