@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import by.arvisit.modsenlibapp.libraryservice.controller.openapi.LibraryOpenApi;
 import by.arvisit.modsenlibapp.libraryservice.dto.BorrowedBookResponseDto;
 import by.arvisit.modsenlibapp.libraryservice.dto.LibraryBookDto;
 import by.arvisit.modsenlibapp.libraryservice.dto.ReturnedBookResponseDto;
@@ -25,14 +26,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/api/v1/books")
+@RequestMapping("/api/v1/library/books")
 @RequiredArgsConstructor
 @Validated
 @Slf4j
-public class LibraryController {
+public class LibraryController implements LibraryOpenApi {
 
     private final LibraryService libraryService;
     
+    @Override
     @PostMapping
     @RolesAllowed("ADMIN")
     public ResponseEntity<LibraryBookDto> addNewBook(@RequestBody @Valid LibraryBookDto newBook) {
@@ -41,6 +43,7 @@ public class LibraryController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @Override
     @GetMapping("/available")
     @RolesAllowed({ "USER", "ADMIN" })
     public List<LibraryBookDto> getAvailableBooks() {
@@ -49,6 +52,7 @@ public class LibraryController {
         return response;
     }
 
+    @Override
     @GetMapping("/borrowed")
     @RolesAllowed({ "USER", "ADMIN" })
     public List<LibraryBookDto> getBorrowedBooks() {
@@ -57,6 +61,7 @@ public class LibraryController {
         return response;
     }
 
+    @Override
     @PostMapping("/available/{id}/borrow")
     @RolesAllowed("USER")
     public ResponseEntity<BorrowedBookResponseDto> borrowBook(@PathVariable @UUID @IsBookExist String id) {
@@ -65,6 +70,7 @@ public class LibraryController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @Override
     @PatchMapping("/borrowed/{id}/return")
     @RolesAllowed("ADMIN")
     public ReturnedBookResponseDto returnBook(@PathVariable @UUID @IsBookExist String id) {
@@ -73,6 +79,7 @@ public class LibraryController {
         return response;
     }
 
+    @Override
     @GetMapping("/borrowed/{id}")
     @RolesAllowed("ADMIN")
     public BorrowedBookResponseDto getBorrowedBookInfo(@PathVariable @UUID @IsBookExist String id) {
