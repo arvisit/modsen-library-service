@@ -24,6 +24,7 @@
         <wiremock.version>3.3.1</wiremock.version>
         <jetty.version>11.0.18</jetty.version>
         <jetty-bom.version>12.0.3</jetty-bom.version>
+        <springdoc.version>2.3.0</springdoc.version>
     </properties>
     
     <repositories>
@@ -99,6 +100,11 @@
             <groupId>by.arvisit.modsen-lib-app</groupId>
             <artifactId>inner-filter-starter</artifactId>
             <version>${inner-filter-starter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc.version}</version>
         </dependency>
 
         <dependency>
