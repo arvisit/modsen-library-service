@@ -15,12 +15,12 @@ public final class LibraryITData {
     public static final String AVAILABLE_RETURNED_BOOK_ID = "c79eb50b-2e71-4e98-87ab-2074c7441713";
     public static final String BORROWED_RETURNED_BOOK_ID = "0319cc17-a6e0-4bfd-a9ef-2ab5cca8abca";
 
-    public static final String URL_BOOKS_ENDPOINT = "/api/v1/books";
-    public static final String URL_AVAILABLE_BOOKS_ENDPOINT = "/api/v1/books/available";
-    public static final String URL_BORROWED_BOOKS_ENDPOINT = "/api/v1/books/borrowed";
-    public static final String URL_BORROWED_BOOK_INFO_ENDPOINT = "/api/v1/books/borrowed/{id}";
-    public static final String URL_BORROW_BOOK_ENDPOINT = "/api/v1/books/available/{id}/borrow";
-    public static final String URL_RETURN_BOOK_ENDPOINT = "/api/v1/books/borrowed/{id}/return";
+    public static final String URL_BOOKS_ENDPOINT = "/api/v1/library/books";
+    public static final String URL_AVAILABLE_BOOKS_ENDPOINT = "/api/v1/library/books/available";
+    public static final String URL_BORROWED_BOOKS_ENDPOINT = "/api/v1/library/books/borrowed";
+    public static final String URL_BORROWED_BOOK_INFO_ENDPOINT = "/api/v1/library/books/borrowed/{id}";
+    public static final String URL_BORROW_BOOK_ENDPOINT = "/api/v1/library/books/available/{id}/borrow";
+    public static final String URL_RETURN_BOOK_ENDPOINT = "/api/v1/library/books/borrowed/{id}/return";
 
     public static final String USERNAME = "user@mail.com";
 

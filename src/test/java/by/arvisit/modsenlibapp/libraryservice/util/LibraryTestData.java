@@ -11,12 +11,12 @@ public final class LibraryTestData {
     public static final String NEW_BOOK_ID = "66701adf-364d-44bd-8d46-46ef01d2af4d";
     public static final String USERNAME = "user@mail.com";
 
-    public static final String URL_BOOKS_ENDPOINT = "/api/v1/books";
-    public static final String URL_AVAILABLE_BOOKS_ENDPOINT = "/api/v1/books/available";
-    public static final String URL_BORROWED_BOOKS_ENDPOINT = "/api/v1/books/borrowed";
-    public static final String URL_BORROW_BOOK_ENDPOINT = "/api/v1/books/available/{id}/borrow";
-    public static final String URL_RETURN_BOOK_ENDPOINT = "/api/v1/books/borrowed/{id}/return";
-    public static final String URL_BORROWED_BOOK_INFO_ENDPOINT = "/api/v1/books/borrowed/{id}";
+    public static final String URL_BOOKS_ENDPOINT = "/api/v1/library/books";
+    public static final String URL_AVAILABLE_BOOKS_ENDPOINT = "/api/v1/library/books/available";
+    public static final String URL_BORROWED_BOOKS_ENDPOINT = "/api/v1/library/books/borrowed";
+    public static final String URL_BORROW_BOOK_ENDPOINT = "/api/v1/library/books/available/{id}/borrow";
+    public static final String URL_RETURN_BOOK_ENDPOINT = "/api/v1/library/books/borrowed/{id}/return";
+    public static final String URL_BORROWED_BOOK_INFO_ENDPOINT = "/api/v1/library/books/borrowed/{id}";
 
     private LibraryTestData() {
     }
