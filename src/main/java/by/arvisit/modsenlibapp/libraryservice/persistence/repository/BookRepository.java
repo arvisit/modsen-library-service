@@ -17,6 +17,6 @@ public interface BookRepository extends JpaRepository<Book, UUID> {
     @Query("select b from Book b join b.records r where r.borrowedDate is not null and r.returnedDate is null")
     List<Book> findBorrowedBooks();
 
-    @Query("select count(b) > 0 from Book b left join b.records r where b.id = :id and (r.borrowedDate is not null and r.returnedDate is not null) or (r.borrowedDate is null and r.returnedDate is null)")
+    @Query("select count(b) > 0 from Book b where b.id = :id and b not in (select b from Book b join b.records r where r.borrowedDate is not null and r.returnedDate is null)")
     boolean isAvailable(@Param("id") UUID id);
 }
